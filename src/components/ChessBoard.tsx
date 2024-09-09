@@ -1,28 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ChessSquare from './ChessSquare';
 import ChessPiece from './ChessPiece';
 
 const ChessBoard: React.FC = () => {
-  // Початкова розстановка фігур
-  const initialBoard = [
-    ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"], // 1-ий рядок білих фігур
-    ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"], // 2-ий рядок білих пішаків
-    Array(8).fill(null), // Порожні рядки
+  // Використовуємо useState для збереження стану дошки
+  const [board, setBoard] = useState([
+    ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"],
+    ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
     Array(8).fill(null),
     Array(8).fill(null),
     Array(8).fill(null),
-    ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"], // 7-ий рядок чорних пішаків
-    ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"], // 8-ий рядок чорних фігур
-  ];
+    Array(8).fill(null),
+    ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
+    ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
+  ]);
+
+  // Функція для переміщення фігури
+  const movePiece = (toX: number, toY: number) => {
+    // Логіка переміщення (можна розширити)
+    setBoard((prevBoard) => {
+      const newBoard = prevBoard.map(row => [...row]);
+      const piece = newBoard[toY][toX]; // Отримуємо фігуру
+      newBoard[toY][toX] = piece;
+      return newBoard;
+    });
+  };
 
   // Функція для рендерингу клітинки та фігури
   const renderSquare = (i: number) => {
     const x = i % 8;
     const y = Math.floor(i / 8);
-    const piece = initialBoard[y][x];
+    const piece = board[y][x];
     return (
-      <ChessSquare key={i} x={x} y={y}>
-        {piece && <ChessPiece piece={piece} />}
+      <ChessSquare key={i} x={x} y={y} movePiece={movePiece}>
+        {piece && <ChessPiece piece={piece} x={x} y={y} />}
       </ChessSquare>
     );
   };
