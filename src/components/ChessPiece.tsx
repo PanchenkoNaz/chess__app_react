@@ -7,9 +7,7 @@ interface ChessPieceProps {
   y: number;
 }
 
-const ChessPiece: React.FC<ChessPieceProps> = ({ piece, color, x, y }) => {
-  const isBlackSquare = (x + y) % 2 === 1; // Визначаємо колір клітинки
-
+const ChessPiece: React.FC<ChessPieceProps> = ({ piece, color }) => {
   // Конвертуємо фігуру в шаховий символ
   const chessSymbols: { [key: string]: string } = {
     p: '♟', r: '♜', n: '♞', b: '♝', q: '♛', k: '♚', // Чорні фігури
@@ -23,7 +21,7 @@ const ChessPiece: React.FC<ChessPieceProps> = ({ piece, color, x, y }) => {
       style={{
         fontSize: '40px',
         fontFamily: 'Chess Merida, sans-serif',
-        color: isBlackSquare ? 'white' : 'black', // Якщо клітинка чорна, фігура буде білою, і навпаки
+        color: color === 'w' ? 'white' : 'black', // Визначаємо колір фігури на основі її кольору
       }}
     >
       {symbol}
