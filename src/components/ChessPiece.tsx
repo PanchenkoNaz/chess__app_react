@@ -1,5 +1,4 @@
 import React from 'react';
-import { useDrag } from 'react-dnd';
 
 interface ChessPieceProps {
   piece: string;
@@ -9,25 +8,25 @@ interface ChessPieceProps {
 }
 
 const ChessPiece: React.FC<ChessPieceProps> = ({ piece, color, x, y }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'piece',
-    item: { x, y },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-  }));
+  const isBlackSquare = (x + y) % 2 === 1; // Визначаємо колір клітинки
+
+  // Конвертуємо фігуру в шаховий символ
+  const chessSymbols: { [key: string]: string } = {
+    p: '♟', r: '♜', n: '♞', b: '♝', q: '♛', k: '♚', // Чорні фігури
+    P: '♙', R: '♖', N: '♘', B: '♗', Q: '♕', K: '♔', // Білі фігури
+  };
+
+  const symbol = chessSymbols[piece] || '?'; // Отримуємо символ фігури
 
   return (
     <div
-      ref={drag}
       style={{
-        fontSize: '32px',
-        opacity: isDragging ? 0.5 : 1, // Прозорість при перетягуванні
-        cursor: 'move',
-        color: color === 'w' ? 'white' : 'black', // Білий або чорний колір фігури
+        fontSize: '40px',
+        fontFamily: 'Chess Merida, sans-serif',
+        color: isBlackSquare ? 'white' : 'black', // Якщо клітинка чорна, фігура буде білою, і навпаки
       }}
     >
-      {piece}
+      {symbol}
     </div>
   );
 };

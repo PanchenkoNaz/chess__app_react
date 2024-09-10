@@ -1,49 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import ChessSquare from './ChessSquare';
 import ChessPiece from './ChessPiece';
-import { Chess } from 'chess.js'; // Імпортуємо бібліотеку chess.js
+import { Chess, Piece as ChessPieceType } from 'chess.js'; // Імпортуємо Chess.js
+
+// Тип для фігури
+interface Piece {
+  type: string;
+  color: string;
+}
 
 const ChessBoard: React.FC = () => {
-  const [game, setGame] = useState(new Chess()); // Ініціалізуємо шахову гру
-  const [board, setBoard] = useState(game.board()); // Зберігаємо стан шахової дошки
-  const [status, setStatus] = useState(''); // Статус гри (Шах, Мат тощо)
+  const [game] = useState(new Chess()); // Ініціалізуємо нову шахову гру
+  const [board, setBoard] = useState<(Piece | null)[][]>(game.board()); // Типізуємо двовимірний масив
 
-  // Перевіряємо стан гри (шах/мат)
+  const [status, setStatus] = useState(''); // Статус гри
+
+  // Перевіряємо, чи є шах або мат
   useEffect(() => {
     if (game.isCheckmate()) {
-      setStatus('Мат! Гра завершена');
+      setStatus('Checkmate! The game is over');
     } else if (game.isCheck()) {
-      setStatus('Шах!');
+      setStatus('Check!');
     } else {
       setStatus('');
     }
-  }, [board, game]);
+  }, [board]);
 
-  // Функція для переміщення фігури
+  // Логіка для переміщення фігури
   const movePiece = (toX: number, toY: number, fromX: number, fromY: number) => {
-    const move = game.move({
-      from: `${String.fromCharCode(97 + fromX)}${8 - fromY}`, // Конвертуємо координати
-      to: `${String.fromCharCode(97 + toX)}${8 - toY}`,
-    });
+    const from = `${String.fromCharCode(97 + fromX)}${8 - fromY}`;
+    const to = `${String.fromCharCode(97 + toX)}${8 - toY}`;
 
-    if (move) {
-      setBoard(game.board()); // Оновлюємо дошку, якщо хід валідний
+    try {
+      const move = game.move({
+        from: from,
+        to: to,
+      });
+
+      if (move) {
+        setBoard(game.board()); // Оновлюємо дошку після валідного ходу
+      } else {
+        setStatus('Invalid move!');
+      }
+    } catch (error) {
+      setStatus('Invalid move! Try again.');
     }
   };
 
-  // Функція для перезапуску гри
-  const resetGame = () => {
-    const newGame = new Chess(); // Створюємо нову гру
-    setGame(newGame);
-    setBoard(newGame.board()); // Оновлюємо стан дошки
-  };
-
-  // Рендер кожної клітинки дошки
+  // Рендеримо кожну клітинку шахової дошки
   const renderSquare = (i: number) => {
     const x = i % 8;
     const y = Math.floor(i / 8);
-    const piece = board[y][x] ? board[y][x].type : null;
-    const color = board[y][x] && board[y][x].color ? board[y][x].color : ''; // Виправляємо тип для color
+
+    const square = board[y][x]; // Отримуємо інформацію про клітинку
+    const piece = square ? square.type : null;
+    const color = square ? square.color : '';
+
     return (
       <ChessSquare key={i} x={x} y={y} movePiece={movePiece}>
         {piece && <ChessPiece piece={piece} color={color} x={x} y={y} />}
@@ -51,7 +63,7 @@ const ChessBoard: React.FC = () => {
     );
   };
 
-  // Генеруємо масив з клітинок дошки
+  // Генеруємо масив клітинок для рендерингу дошки
   const squares = [];
   for (let i = 0; i < 64; i++) {
     squares.push(renderSquare(i));
@@ -62,16 +74,17 @@ const ChessBoard: React.FC = () => {
       <div style={{ display: 'flex', flexWrap: 'wrap', width: '400px', margin: 'auto' }}>
         {squares}
       </div>
-      {/* Виведення статусу гри (Шах/Мат) */}
       <div style={{ marginTop: '20px', fontSize: '24px', color: 'red' }}>
         {status}
       </div>
-      {/* Кнопка для перезапуску гри */}
       <button 
         style={{ marginTop: '20px', padding: '10px 20px', fontSize: '18px' }}
-        onClick={resetGame}
+        onClick={() => {
+          const newGame = new Chess(); // Перезапуск гри
+          setBoard(newGame.board());
+        }}
       >
-        Перезапустити гру
+        Restart Game
       </button>
     </div>
   );
