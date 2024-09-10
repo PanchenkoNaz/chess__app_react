@@ -9,30 +9,29 @@ interface ChessSquareProps {
 }
 
 const ChessSquare: React.FC<ChessSquareProps> = ({ x, y, children, movePiece }) => {
-  const isBlack = (x + y) % 2 === 1; // Визначаємо колір клітинки (чорна чи біла)
+  const isBlack = (x + y) % 2 === 1; // Визначаємо колір клітинки
 
-  // Встановлюємо світло-сірий і темно-сірий кольори для клітинок
-  const backgroundColor = isBlack ? '#4A4A4A' : '#D3D3D3'; // Темно-сірий для чорних, світло-сірий для білих
-
-  // Використовуємо useDrop для можливості перетягування фігур
+  // Логіка для прийому перетягнутої фігури
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'piece',
-    drop: (item: { x: number; y: number }) => movePiece(x, y, item.x, item.y),
+    drop: (item: { x: number; y: number }) => movePiece(x, y, item.x, item.y), // Виклик функції переміщення фігури
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
   }));
 
+  const backgroundColor = isBlack ? '#4A4A4A' : '#D3D3D3'; // Темно-сірий для чорних, світло-сірий для білих
+
   return (
     <div
-      ref={drop}
+      ref={drop} // Додаємо можливість прийому перетягування
       style={{
         width: '50px',
         height: '50px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: isOver ? 'yellow' : backgroundColor, // Підсвічування при перетягуванні
+        backgroundColor: isOver ? 'yellow' : backgroundColor, // Підсвічування при наведенні
       }}
     >
       {children}
