@@ -5,17 +5,16 @@ interface ChessSquareProps {
   x: number;
   y: number;
   children?: React.ReactNode;
-  movePiece: (toX: number, toY: number) => void;
+  movePiece: (toX: number, toY: number, fromX: number, fromY: number) => void;
 }
 
 const ChessSquare: React.FC<ChessSquareProps> = ({ x, y, children, movePiece }) => {
   const isBlack = (x + y) % 2 === 1;
   const backgroundColor = isBlack ? 'black' : 'white';
 
-  // Налаштовуємо useDrop для прийому фігури
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'piece',
-    drop: () => movePiece(x, y),
+    drop: (item: { x: number; y: number }) => movePiece(x, y, item.x, item.y),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
@@ -30,7 +29,7 @@ const ChessSquare: React.FC<ChessSquareProps> = ({ x, y, children, movePiece }) 
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: isOver ? 'yellow' : backgroundColor, // Підсвічує клітинку під час перетягування
+        backgroundColor: isOver ? 'yellow' : backgroundColor, // Підсвічування при перетягуванні
       }}
     >
       {children}

@@ -10,9 +10,9 @@ const ChessBoard: React.FC = () => {
 
   // Перевіряємо стан гри (шах/мат)
   useEffect(() => {
-    if (game.in_checkmate()) {
+    if (game.isCheckmate()) {
       setStatus('Мат! Гра завершена');
-    } else if (game.in_check()) {
+    } else if (game.isCheck()) {
       setStatus('Шах!');
     } else {
       setStatus('');
@@ -43,7 +43,7 @@ const ChessBoard: React.FC = () => {
     const x = i % 8;
     const y = Math.floor(i / 8);
     const piece = board[y][x] ? board[y][x].type : null;
-    const color = board[y][x] ? board[y][x].color : null;
+    const color = board[y][x] && board[y][x].color ? board[y][x].color : ''; // Виправляємо тип для color
     return (
       <ChessSquare key={i} x={x} y={y} movePiece={movePiece}>
         {piece && <ChessPiece piece={piece} color={color} x={x} y={y} />}
