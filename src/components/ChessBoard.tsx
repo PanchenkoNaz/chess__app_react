@@ -11,11 +11,14 @@ const ChessBoard: React.FC = () => {
   const [whiteTime, setWhiteTime] = useState(30 * 60); // 30 хвилин для білих
   const [blackTime, setBlackTime] = useState(30 * 60); // 30 хвилин для чорних
   const [isWhiteTurn, setIsWhiteTurn] = useState(true); // Відстежуємо, чий хід
+  const [isGameStarted, setIsGameStarted] = useState(false); // Чи почалася гра
 
   const timerRef = useRef<NodeJS.Timeout | null>(null); // Для зберігання таймера
 
-  // Оновлюємо таймер для кожного гравця
+  // Оновлюємо таймер для кожного гравця після початку гри
   useEffect(() => {
+    if (!isGameStarted) return; // Таймери починають працювати тільки після першого ходу
+
     if (game.isCheckmate()) {
       setStatus('Checkmate! Game over');
       clearInterval(timerRef.current as NodeJS.Timeout);
@@ -30,10 +33,12 @@ const ChessBoard: React.FC = () => {
     } else {
       setStatus('');
     }
-  }, [board, whiteTime, blackTime]);
+  }, [board, whiteTime, blackTime, isGameStarted]);
 
   // Логіка для таймера кожного ходу
   useEffect(() => {
+    if (!isGameStarted) return; // Не починаємо відлік часу, поки гра не почалася
+
     if (isWhiteTurn) {
       timerRef.current = setInterval(() => {
         setWhiteTime((prev) => Math.max(prev - 1, 0));
@@ -45,7 +50,7 @@ const ChessBoard: React.FC = () => {
     }
 
     return () => clearInterval(timerRef.current as NodeJS.Timeout); // Зупиняємо таймер після зміни ходу
-  }, [isWhiteTurn]);
+  }, [isWhiteTurn, isGameStarted]);
 
   // Конвертуємо секунди в формат хвилин і секунд
   const formatTime = (seconds: number) => {
@@ -64,6 +69,10 @@ const ChessBoard: React.FC = () => {
       if (move) {
         setBoard(game.board()); // Оновлюємо дошку після валідного ходу
         setIsWhiteTurn(!isWhiteTurn); // Змінюємо хід гравця
+
+        if (!isGameStarted) {
+          setIsGameStarted(true); // Починаємо гру після першого ходу
+        }
       } else {
         setStatus('Invalid move!'); // Виводимо м'яке повідомлення для користувача
       }
@@ -122,6 +131,7 @@ const ChessBoard: React.FC = () => {
           setWhiteTime(30 * 60); // Перезапускаємо таймер білих
           setBlackTime(30 * 60); // Перезапускаємо таймер чорних
           setIsWhiteTurn(true); // Починає білий
+          setIsGameStarted(false); // Гра не починається до першого ходу
           setStatus(''); // Очищуємо статус
         }}
       >
