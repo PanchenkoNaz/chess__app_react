@@ -1,24 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ChessSquare from './ChessSquare';
 import ChessPiece from './ChessPiece';
 import { Chess } from 'chess.js'; // Імпортуємо chess.js для логіки шахової гри
 
 const ChessBoard: React.FC = () => {
-  // Ініціалізуємо нову гру
   const [game, setGame] = useState(new Chess());
   const [board, setBoard] = useState(game.board());
   const [status, setStatus] = useState(''); // Статус гри (для відображення мата або шаху)
 
-  // Оновлення статусу гри (мат, шах, чи просто хід)
+  const [whiteTime, setWhiteTime] = useState(30 * 60); // 30 хвилин для білих
+  const [blackTime, setBlackTime] = useState(30 * 60); // 30 хвилин для чорних
+  const [isWhiteTurn, setIsWhiteTurn] = useState(true); // Відстежуємо, чий хід
+
+  const timerRef = useRef<NodeJS.Timeout | null>(null); // Для зберігання таймера
+
+  // Оновлюємо таймер для кожного гравця
   useEffect(() => {
     if (game.isCheckmate()) {
       setStatus('Checkmate! Game over');
+      clearInterval(timerRef.current as NodeJS.Timeout);
     } else if (game.isCheck()) {
       setStatus('Check!');
+    } else if (whiteTime <= 0) {
+      setStatus('Time out! Black wins!');
+      clearInterval(timerRef.current as NodeJS.Timeout);
+    } else if (blackTime <= 0) {
+      setStatus('Time out! White wins!');
+      clearInterval(timerRef.current as NodeJS.Timeout);
     } else {
-      setStatus(''); // Очищуємо статус, якщо немає шаху чи мата
+      setStatus('');
     }
-  }, [board, game]);
+  }, [board, whiteTime, blackTime]);
+
+  // Логіка для таймера кожного ходу
+  useEffect(() => {
+    if (isWhiteTurn) {
+      timerRef.current = setInterval(() => {
+        setWhiteTime((prev) => Math.max(prev - 1, 0));
+      }, 1000);
+    } else {
+      timerRef.current = setInterval(() => {
+        setBlackTime((prev) => Math.max(prev - 1, 0));
+      }, 1000);
+    }
+
+    return () => clearInterval(timerRef.current as NodeJS.Timeout); // Зупиняємо таймер після зміни ходу
+  }, [isWhiteTurn]);
+
+  // Конвертуємо секунди в формат хвилин і секунд
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+  };
 
   // Функція для переміщення фігур
   const movePiece = (toX: number, toY: number, fromX: number, fromY: number) => {
@@ -29,6 +63,7 @@ const ChessBoard: React.FC = () => {
       const move = game.move({ from, to });
       if (move) {
         setBoard(game.board()); // Оновлюємо дошку після валідного ходу
+        setIsWhiteTurn(!isWhiteTurn); // Змінюємо хід гравця
       } else {
         setStatus('Invalid move!'); // Виводимо м'яке повідомлення для користувача
       }
@@ -65,10 +100,16 @@ const ChessBoard: React.FC = () => {
       <div style={{ display: 'flex', flexWrap: 'wrap', width: '400px', margin: 'auto' }}>
         {squares}
       </div>
-      
+
       {/* Відображення статусу гри (шах, мат або неправильний хід) */}
       <div style={{ marginTop: '20px', fontSize: '24px', color: 'red' }}>
         {status}
+      </div>
+
+      {/* Відображення таймерів для обох гравців */}
+      <div style={{ marginTop: '20px', fontSize: '20px' }}>
+        <p>White: {formatTime(whiteTime)}</p>
+        <p>Black: {formatTime(blackTime)}</p>
       </div>
 
       {/* Кнопка для перезапуску гри */}
@@ -78,6 +119,9 @@ const ChessBoard: React.FC = () => {
           const newGame = new Chess(); // Створюємо нову гру
           setGame(newGame); // Оновлюємо стан гри
           setBoard(newGame.board()); // Оновлюємо дошку
+          setWhiteTime(30 * 60); // Перезапускаємо таймер білих
+          setBlackTime(30 * 60); // Перезапускаємо таймер чорних
+          setIsWhiteTurn(true); // Починає білий
           setStatus(''); // Очищуємо статус
         }}
       >
