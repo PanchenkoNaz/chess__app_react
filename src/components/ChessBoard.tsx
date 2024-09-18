@@ -40,15 +40,15 @@ const ChessBoard: React.FC = () => {
     if (!isGameStarted) return; // Не починаємо відлік часу, поки гра не почалася
 
     // Перемикаємо таймер в залежності від того, чи зараз хід білих чи чорних
-    clearInterval(timerRef.current as NodeJS.Timeout);
+    clearInterval(timerRef.current as NodeJS.Timeout); // Очищуємо попередній інтервал
 
     if (isWhiteTurn) {
       timerRef.current = setInterval(() => {
-        setWhiteTime((prev) => Math.max(prev - 1, 0));
+        setWhiteTime((prev) => Math.max(prev - 1, 0)); // Відлік для білих
       }, 1000);
     } else {
       timerRef.current = setInterval(() => {
-        setBlackTime((prev) => Math.max(prev - 1, 0));
+        setBlackTime((prev) => Math.max(prev - 1, 0)); // Відлік для чорних
       }, 1000);
     }
 
