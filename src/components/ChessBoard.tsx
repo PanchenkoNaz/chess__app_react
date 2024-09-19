@@ -13,7 +13,8 @@ const ChessBoard: React.FC = () => {
   const [isWhiteTurn, setIsWhiteTurn] = useState(true); // Відстежуємо, чий хід
   const [isGameStarted, setIsGameStarted] = useState(false); // Чи почалася гра
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null); // Для зберігання таймера
+  const whiteTimerRef = useRef<NodeJS.Timeout | null>(null); // Таймер для білих
+  const blackTimerRef = useRef<NodeJS.Timeout | null>(null); // Таймер для чорних
 
   // Оновлюємо таймер для кожного гравця після початку гри
   useEffect(() => {
@@ -21,38 +22,44 @@ const ChessBoard: React.FC = () => {
 
     if (game.isCheckmate()) {
       setStatus('Checkmate! Game over');
-      clearInterval(timerRef.current as NodeJS.Timeout);
+      clearInterval(whiteTimerRef.current as NodeJS.Timeout);
+      clearInterval(blackTimerRef.current as NodeJS.Timeout);
     } else if (game.isCheck()) {
       setStatus('Check!');
     } else if (whiteTime <= 0) {
       setStatus('Time out! Black wins!');
-      clearInterval(timerRef.current as NodeJS.Timeout);
+      clearInterval(whiteTimerRef.current as NodeJS.Timeout);
+      clearInterval(blackTimerRef.current as NodeJS.Timeout);
     } else if (blackTime <= 0) {
       setStatus('Time out! White wins!');
-      clearInterval(timerRef.current as NodeJS.Timeout);
+      clearInterval(whiteTimerRef.current as NodeJS.Timeout);
+      clearInterval(blackTimerRef.current as NodeJS.Timeout);
     } else {
       setStatus('');
     }
   }, [board, whiteTime, blackTime, isGameStarted]);
 
-  // Логіка для таймера кожного ходу
+  // Логіка для запуску та зупинки таймерів
   useEffect(() => {
     if (!isGameStarted) return; // Не починаємо відлік часу, поки гра не почалася
 
-    // Перемикаємо таймер в залежності від того, чи зараз хід білих чи чорних
-    clearInterval(timerRef.current as NodeJS.Timeout); // Очищуємо попередній інтервал
-
     if (isWhiteTurn) {
-      timerRef.current = setInterval(() => {
-        setWhiteTime((prev) => Math.max(prev - 1, 0)); // Відлік для білих
+      clearInterval(blackTimerRef.current as NodeJS.Timeout); // Зупиняємо таймер чорних
+      whiteTimerRef.current = setInterval(() => {
+        setWhiteTime((prev) => Math.max(prev - 1, 0)); // Запускаємо таймер білих
       }, 1000);
     } else {
-      timerRef.current = setInterval(() => {
-        setBlackTime((prev) => Math.max(prev - 1, 0)); // Відлік для чорних
+      clearInterval(whiteTimerRef.current as NodeJS.Timeout); // Зупиняємо таймер білих
+      blackTimerRef.current = setInterval(() => {
+        setBlackTime((prev) => Math.max(prev - 1, 0)); // Запускаємо таймер чорних
       }, 1000);
     }
 
-    return () => clearInterval(timerRef.current as NodeJS.Timeout); // Зупиняємо таймер після зміни ходу
+    // Зупиняємо активний таймер при зміні ходу
+    return () => {
+      clearInterval(whiteTimerRef.current as NodeJS.Timeout);
+      clearInterval(blackTimerRef.current as NodeJS.Timeout);
+    };
   }, [isWhiteTurn, isGameStarted]);
 
   // Конвертуємо секунди в формат хвилин і секунд
@@ -136,6 +143,8 @@ const ChessBoard: React.FC = () => {
           setIsWhiteTurn(true); // Починає білий
           setIsGameStarted(false); // Гра не починається до першого ходу
           setStatus(''); // Очищуємо статус
+          clearInterval(whiteTimerRef.current as NodeJS.Timeout);
+          clearInterval(blackTimerRef.current as NodeJS.Timeout);
         }}
       >
         Restart Game
