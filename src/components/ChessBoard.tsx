@@ -1,65 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChessSquare from './ChessSquare';
 import ChessPiece from './ChessPiece';
-import { Chess } from 'chess.js'; // Імпортуємо chess.js для логіки шахової гри
+import { Chess } from 'chess.js';
 
 const ChessBoard: React.FC = () => {
   const [game, setGame] = useState(new Chess());
   const [board, setBoard] = useState(game.board());
   const [status, setStatus] = useState(''); // Статус гри (для відображення мата або шаху)
 
-  const [whiteTime, setWhiteTime] = useState(30 * 60); // 30 хвилин для білих
-  const [blackTime, setBlackTime] = useState(30 * 60); // 30 хвилин для чорних
-  const [isWhiteTurn, setIsWhiteTurn] = useState(true); // Відстежуємо, чий хід
-  const [isGameStarted, setIsGameStarted] = useState(false); // Чи почалася гра
-
-  const timerRef = useRef<NodeJS.Timeout | null>(null); // Один таймер, який перемикається між гравцями
-
-  // Оновлюємо таймер для кожного гравця після початку гри
+  // Оновлюємо статус гри
   useEffect(() => {
-    if (!isGameStarted) return; // Таймери починають працювати тільки після першого ходу
-
     if (game.isCheckmate()) {
       setStatus('Checkmate! Game over');
-      clearInterval(timerRef.current as NodeJS.Timeout);
     } else if (game.isCheck()) {
       setStatus('Check!');
-    } else if (whiteTime <= 0) {
-      setStatus('Time out! Black wins!');
-      clearInterval(timerRef.current as NodeJS.Timeout);
-    } else if (blackTime <= 0) {
-      setStatus('Time out! White wins!');
-      clearInterval(timerRef.current as NodeJS.Timeout);
     } else {
       setStatus('');
     }
-  }, [board, whiteTime, blackTime, isGameStarted]);
-
-  // Логіка для запуску та зупинки таймерів
-  useEffect(() => {
-    if (!isGameStarted) return; // Не починаємо відлік часу, поки гра не почалася
-
-    clearInterval(timerRef.current as NodeJS.Timeout); // Зупиняємо попередній таймер
-
-    if (isWhiteTurn) {
-      timerRef.current = setInterval(() => {
-        setWhiteTime((prev) => Math.max(prev - 1, 0)); // Запускаємо таймер для білих
-      }, 1000);
-    } else {
-      timerRef.current = setInterval(() => {
-        setBlackTime((prev) => Math.max(prev - 1, 0)); // Запускаємо таймер для чорних
-      }, 1000);
-    }
-
-    return () => clearInterval(timerRef.current as NodeJS.Timeout); // Очищуємо інтервал при зміні ходу
-  }, [isWhiteTurn, isGameStarted]);
-
-  // Конвертуємо секунди в формат хвилин і секунд
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
-  };
+  }, [board]);
 
   // Функція для переміщення фігур
   const movePiece = (toX: number, toY: number, fromX: number, fromY: number) => {
@@ -70,13 +28,8 @@ const ChessBoard: React.FC = () => {
       const move = game.move({ from, to });
       if (move) {
         setBoard(game.board()); // Оновлюємо дошку після валідного ходу
-        setIsWhiteTurn(!isWhiteTurn); // Змінюємо хід гравця
-
-        if (!isGameStarted) {
-          setIsGameStarted(true); // Починаємо гру після першого ходу
-        }
       } else {
-        setStatus('Invalid move!'); // Виводимо м'яке повідомлення для користувача
+        setStatus('Invalid move!'); // Виводимо повідомлення для користувача
       }
     } catch (error) {
       setStatus('Invalid move! Try again.');
@@ -117,12 +70,6 @@ const ChessBoard: React.FC = () => {
         {status}
       </div>
 
-      {/* Відображення таймерів для обох гравців */}
-      <div style={{ marginTop: '20px', fontSize: '20px' }}>
-        <p>White: {formatTime(whiteTime)}</p>
-        <p>Black: {formatTime(blackTime)}</p>
-      </div>
-
       {/* Кнопка для перезапуску гри */}
       <button
         style={{ marginTop: '20px', padding: '10px 20px', fontSize: '18px' }}
@@ -130,12 +77,7 @@ const ChessBoard: React.FC = () => {
           const newGame = new Chess(); // Створюємо нову гру
           setGame(newGame); // Оновлюємо стан гри
           setBoard(newGame.board()); // Оновлюємо дошку
-          setWhiteTime(30 * 60); // Перезапускаємо таймер білих
-          setBlackTime(30 * 60); // Перезапускаємо таймер чорних
-          setIsWhiteTurn(true); // Починає білий
-          setIsGameStarted(false); // Гра не починається до першого ходу
           setStatus(''); // Очищуємо статус
-          clearInterval(timerRef.current as NodeJS.Timeout); // Очищуємо активний таймер
         }}
       >
         Restart Game
