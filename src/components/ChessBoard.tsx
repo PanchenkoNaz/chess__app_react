@@ -12,6 +12,8 @@ const ChessBoard: React.FC = () => {
   useEffect(() => {
     if (game.isCheckmate()) {
       setStatus('Checkmate! Game over');
+    } else if (game.isDraw()) {
+      setStatus('Draw! Game over');
     } else if (game.isCheck()) {
       setStatus('Check!');
     } else {
@@ -19,17 +21,23 @@ const ChessBoard: React.FC = () => {
     }
   }, [board]);
 
-  // Функція для переміщення фігур
+  // Функція для переміщення фігур з промоцією пішака
   const movePiece = (toX: number, toY: number, fromX: number, fromY: number) => {
     const from = `${String.fromCharCode(97 + fromX)}${8 - fromY}`;
     const to = `${String.fromCharCode(97 + toX)}${8 - toY}`;
 
     try {
-      const move = game.move({ from, to });
+      // Якщо пішак досягне останньої горизонталі, виконуємо промоцію
+      const move = game.move({
+        from,
+        to,
+        promotion: 'q', // Промоція пішака автоматично на ферзя (королеву)
+      });
+
       if (move) {
-        setBoard(game.board()); // Оновлюємо дошку після валідного ходу
+        setBoard([...game.board()]); // Оновлюємо дошку після валідного ходу
       } else {
-        setStatus('Invalid move!'); // Виводимо повідомлення для користувача
+        setStatus('Invalid move!'); // Виводимо повідомлення для користувача про неправильний хід
       }
     } catch (error) {
       setStatus('Invalid move! Try again.');
@@ -74,10 +82,7 @@ const ChessBoard: React.FC = () => {
       <button
         style={{ marginTop: '20px', padding: '10px 20px', fontSize: '18px' }}
         onClick={() => {
-          const newGame = new Chess(); // Створюємо нову гру
-          setGame(newGame); // Оновлюємо стан гри
-          setBoard(newGame.board()); // Оновлюємо дошку
-          setStatus(''); // Очищуємо статус
+          window.location.reload(); // Перезавантажуємо сторінку
         }}
       >
         Restart Game
