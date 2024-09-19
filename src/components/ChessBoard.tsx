@@ -13,8 +13,7 @@ const ChessBoard: React.FC = () => {
   const [isWhiteTurn, setIsWhiteTurn] = useState(true); // Відстежуємо, чий хід
   const [isGameStarted, setIsGameStarted] = useState(false); // Чи почалася гра
 
-  const whiteTimerRef = useRef<NodeJS.Timeout | null>(null); // Таймер для білих
-  const blackTimerRef = useRef<NodeJS.Timeout | null>(null); // Таймер для чорних
+  const timerRef = useRef<NodeJS.Timeout | null>(null); // Один таймер, який перемикається між гравцями
 
   // Оновлюємо таймер для кожного гравця після початку гри
   useEffect(() => {
@@ -22,18 +21,15 @@ const ChessBoard: React.FC = () => {
 
     if (game.isCheckmate()) {
       setStatus('Checkmate! Game over');
-      clearInterval(whiteTimerRef.current as NodeJS.Timeout);
-      clearInterval(blackTimerRef.current as NodeJS.Timeout);
+      clearInterval(timerRef.current as NodeJS.Timeout);
     } else if (game.isCheck()) {
       setStatus('Check!');
     } else if (whiteTime <= 0) {
       setStatus('Time out! Black wins!');
-      clearInterval(whiteTimerRef.current as NodeJS.Timeout);
-      clearInterval(blackTimerRef.current as NodeJS.Timeout);
+      clearInterval(timerRef.current as NodeJS.Timeout);
     } else if (blackTime <= 0) {
       setStatus('Time out! White wins!');
-      clearInterval(whiteTimerRef.current as NodeJS.Timeout);
-      clearInterval(blackTimerRef.current as NodeJS.Timeout);
+      clearInterval(timerRef.current as NodeJS.Timeout);
     } else {
       setStatus('');
     }
@@ -43,23 +39,19 @@ const ChessBoard: React.FC = () => {
   useEffect(() => {
     if (!isGameStarted) return; // Не починаємо відлік часу, поки гра не почалася
 
+    clearInterval(timerRef.current as NodeJS.Timeout); // Зупиняємо попередній таймер
+
     if (isWhiteTurn) {
-      clearInterval(blackTimerRef.current as NodeJS.Timeout); // Зупиняємо таймер чорних
-      whiteTimerRef.current = setInterval(() => {
-        setWhiteTime((prev) => Math.max(prev - 1, 0)); // Запускаємо таймер білих
+      timerRef.current = setInterval(() => {
+        setWhiteTime((prev) => Math.max(prev - 1, 0)); // Запускаємо таймер для білих
       }, 1000);
     } else {
-      clearInterval(whiteTimerRef.current as NodeJS.Timeout); // Зупиняємо таймер білих
-      blackTimerRef.current = setInterval(() => {
-        setBlackTime((prev) => Math.max(prev - 1, 0)); // Запускаємо таймер чорних
+      timerRef.current = setInterval(() => {
+        setBlackTime((prev) => Math.max(prev - 1, 0)); // Запускаємо таймер для чорних
       }, 1000);
     }
 
-    // Зупиняємо активний таймер при зміні ходу
-    return () => {
-      clearInterval(whiteTimerRef.current as NodeJS.Timeout);
-      clearInterval(blackTimerRef.current as NodeJS.Timeout);
-    };
+    return () => clearInterval(timerRef.current as NodeJS.Timeout); // Очищуємо інтервал при зміні ходу
   }, [isWhiteTurn, isGameStarted]);
 
   // Конвертуємо секунди в формат хвилин і секунд
@@ -143,8 +135,7 @@ const ChessBoard: React.FC = () => {
           setIsWhiteTurn(true); // Починає білий
           setIsGameStarted(false); // Гра не починається до першого ходу
           setStatus(''); // Очищуємо статус
-          clearInterval(whiteTimerRef.current as NodeJS.Timeout);
-          clearInterval(blackTimerRef.current as NodeJS.Timeout);
+          clearInterval(timerRef.current as NodeJS.Timeout); // Очищуємо активний таймер
         }}
       >
         Restart Game
