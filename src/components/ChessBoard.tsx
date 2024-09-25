@@ -27,7 +27,6 @@ const ChessBoard: React.FC = () => {
     const to = `${String.fromCharCode(97 + toX)}${8 - toY}`;
 
     try {
-      // Якщо пішак досягне останньої горизонталі, виконуємо промоцію
       const move = game.move({
         from,
         to,
@@ -69,7 +68,17 @@ const ChessBoard: React.FC = () => {
   return (
     <div style={{ textAlign: 'center' }}>
       {/* Рендеримо шахову дошку */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', width: '400px', margin: 'auto' }}>
+      <div
+        className="chess-board"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(8, 1fr)', // Чітко встановлюємо 8 колонок для сітки
+          gridAutoRows: '1fr', // Кожен рядок буде рівним
+          width: 'min(90vw, 90vh)', // Розмір шахової дошки для адаптивності
+          height: 'min(90vw, 90vh)',
+          margin: 'auto',
+        }}
+      >
         {squares}
       </div>
 
@@ -80,7 +89,7 @@ const ChessBoard: React.FC = () => {
 
       {/* Кнопка для перезапуску гри */}
       <button
-        style={{ marginTop: '20px', padding: '10px 20px', fontSize: '18px' }}
+        className="restart-button"
         onClick={() => {
           window.location.reload(); // Перезавантажуємо сторінку
         }}
