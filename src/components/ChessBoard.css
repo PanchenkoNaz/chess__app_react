@@ -1,74 +1,47 @@
 /* Стилі для шахової дошки */
 .chess-board {
-    background-color: #333;
-    /* Темна межа */
-    border: 5px solid black;
-    /* Оформлення межі дошки */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    /* Додаємо тінь */
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    /* 8 колонок */
-    grid-auto-rows: 1fr;
-    /* Всі ряди рівні */
-    transition: all 0.3s ease;
-    /* Плавність для анімацій */
+    grid-template-rows: repeat(8, 1fr);
+    width: 90vmin;
+    height: 90vmin;
+    margin: 0 auto;
+    border: 5px solid black;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.chess-square {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4vmin;
 }
 
 .chess-square.light {
-    background-color: #f0d9b5;
-    /* Світло-бежевий для світлих клітинок */
+    background-color: #D3D3D3;
 }
 
 .chess-square.dark {
-    background-color: #b58863;
-    /* Темно-коричневий для темних клітинок */
+    background-color: #4A4A4A;
 }
 
-/* Стилі для кнопки "Restart Game" */
-.restart-button {
-    background-color: #4CAF50;
-    /* Зелений фон */
+/* Кнопка рестарту */
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 2vmin;
+    background-color: #28a745;
     color: white;
     border: none;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 20px auto;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    /* Плавні зміни кольору та трансформації */
+    transition: background-color 0.3s ease;
 }
 
-.restart-button:hover {
-    background-color: #45a049;
-    /* Темніший зелений при наведенні */
-    transform: scale(1.05);
-    /* Збільшення кнопки при наведенні */
+button:hover {
+    background-color: #218838;
 }
 
-.restart-button:active {
-    transform: scale(0.95);
-    /* Зменшення кнопки при натисканні */
-}
-
-/* Плавна поява шахової дошки */
-.chess-board {
-    opacity: 0;
-    animation: fadeIn 1s forwards;
-}
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
-}
-
-@media (max-width: 768px) {
-    .chess-board {
-        width: 80vw;
-        height: 80vw;
-    }
+button:active {
+    background-color: #1e7e34;
 }

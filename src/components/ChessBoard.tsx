@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ChessSquare from './ChessSquare';
 import ChessPiece from './ChessPiece';
 import { Chess } from 'chess.js';
+import './ChessBoard.css';
 
 const ChessBoard: React.FC = () => {
   const [game, setGame] = useState(new Chess());
@@ -73,10 +74,10 @@ const ChessBoard: React.FC = () => {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(8, 1fr)', // Чітко встановлюємо 8 колонок для сітки
-          gridAutoRows: '1fr', // Кожен рядок буде рівним
-          width: 'min(90vw, 90vh)', // Розмір шахової дошки для адаптивності
-          height: 'min(90vw, 90vh)',
-          margin: 'auto',
+          gridTemplateRows: 'repeat(8, 1fr)', // Кожен рядок рівний
+          width: '90vmin', // Автоматично адаптується під висоту та ширину екрану
+          height: '90vmin',
+          margin: '20px auto',
         }}
       >
         {squares}
