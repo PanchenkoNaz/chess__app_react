@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ChessSquare from './ChessSquare';
 import ChessPiece from './ChessPiece';
 import { Chess } from 'chess.js';
-import './ChessBoard.css';
+import './ChessBoard.css'; // Підключаємо стилі
 
 const ChessBoard: React.FC = () => {
   const [game, setGame] = useState(new Chess());
@@ -28,6 +28,7 @@ const ChessBoard: React.FC = () => {
     const to = `${String.fromCharCode(97 + toX)}${8 - toY}`;
 
     try {
+      // Якщо пішак досягне останньої горизонталі, виконуємо промоцію
       const move = game.move({
         from,
         to,
@@ -67,26 +68,11 @@ const ChessBoard: React.FC = () => {
   }
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      {/* Рендеримо шахову дошку */}
-      <div
-        className="chess-board"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(8, 1fr)', // Чітко встановлюємо 8 колонок для сітки
-          gridTemplateRows: 'repeat(8, 1fr)', // Кожен рядок рівний
-          width: '90vmin', // Автоматично адаптується під висоту та ширину екрану
-          height: '90vmin',
-          margin: '20px auto',
-        }}
-      >
-        {squares}
-      </div>
+    <div className="chess-board-container">
+      <div className="chess-board">{squares}</div>
 
       {/* Відображення статусу гри (шах, мат або неправильний хід) */}
-      <div style={{ marginTop: '20px', fontSize: '24px', color: 'red' }}>
-        {status}
-      </div>
+      <div className="status-message">{status}</div>
 
       {/* Кнопка для перезапуску гри */}
       <button
