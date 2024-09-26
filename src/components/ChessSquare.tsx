@@ -26,8 +26,8 @@ const ChessSquare: React.FC<ChessSquareProps> = ({ x, y, children, movePiece }) 
     <div
       ref={drop} // Додаємо можливість прийому перетягування
       style={{
-        width: '50px',
-        height: '50px',
+        width: '9vmin',
+        height: '9vmin',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

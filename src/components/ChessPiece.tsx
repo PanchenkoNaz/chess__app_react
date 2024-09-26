@@ -29,7 +29,7 @@ const ChessPiece: React.FC<ChessPieceProps> = ({ piece, color, x, y }) => {
     <div
       ref={drag} // Додаємо можливість перетягування
       style={{
-        fontSize: '40px',
+        fontSize: '7vmin',
         fontFamily: 'Chess Merida, sans-serif',
         color: color === 'w' ? 'white' : 'black',
         opacity: isDragging ? 0.5 : 1, // Фігура стає прозорою під час перетягування

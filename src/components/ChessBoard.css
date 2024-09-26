@@ -13,11 +13,12 @@
     /* width: 80vmin;
     height: 80vmin; */
     border: 5px solid black;
+    border-radius: 5px;
 }
 
 .chess-square {
     width: 100%;
-    height: 100%;
+    height: 100%; 
 }
 
 .status-message {
@@ -29,7 +30,7 @@
 .restart-button {
     margin-top: 20px;
     padding: 10px 20px;
-    font-size: 18px;
+    font-size: 1rem;
     background-color: green;
     color: white;
     border: none;
