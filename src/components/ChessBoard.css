@@ -10,8 +10,8 @@
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    width: 80vmin;
-    height: 80vmin;
+    /* width: 80vmin;
+    height: 80vmin; */
     border: 5px solid black;
 }
 
