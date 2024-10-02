@@ -20,7 +20,7 @@ const ChessSquare: React.FC<ChessSquareProps> = ({ x, y, children, movePiece }) 
     }),
   }));
 
-  const backgroundColor = isBlack ? '#4A4A4A' : '#D3D3D3'; // Темно-сірий для чорних, світло-сірий для білих
+  const backgroundColor = isBlack ? '#666666' : '#c3c2c2'; // Темно-сірий для чорних, світло-сірий для білих
 
   return (
     <div
