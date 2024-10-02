@@ -3,15 +3,11 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #1b1b1b, #434343);
-    /* Темний шаховий фон */
+    background-color: #282c34;
 }
 
 .preloader-text {
-    font-size: 3rem;
-    font-weight: bold;
-    color: white;
+    font-size: 5rem;
+    color: #ffffff;
     font-family: 'Courier New', Courier, monospace;
-    /* Стиль для ефекту друкування */
-    letter-spacing: 0.1rem;
 }

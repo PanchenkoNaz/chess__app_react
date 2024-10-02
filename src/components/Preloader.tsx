@@ -3,17 +3,18 @@ import './Preloader.css';
 
 const Preloader: React.FC = () => {
   const [text, setText] = useState('');
-  const fullText = 'Chess Legacy'; // Текст, який зʼявлятиметься поступово
+  const fullText = 'Chhess Legacy'; // Тут повинно бути чітко визначене значення тексту
 
   useEffect(() => {
     let index = 0;
     const interval = setInterval(() => {
-      setText((prev) => prev + fullText[index]);
-      index++;
-      if (index === fullText.length) {
+      if (index < fullText.length) {
+        setText((prev) => prev + fullText.charAt(index)); // Використовуємо charAt замість повного рядка
+        index++;
+      } else {
         clearInterval(interval);
       }
-    }, 250); // Затримка між буквами 150 мс
+    }, 150); // Інтервал 150 мс
 
     return () => clearInterval(interval);
   }, []);
@@ -21,7 +22,7 @@ const Preloader: React.FC = () => {
   return (
     <div className="preloader-container">
       <div className="preloader-text">
-        {text}
+        {text} {/* Відображаємо поступово */}
       </div>
     </div>
   );
